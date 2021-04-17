@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+
 use App\Service\CategoryService;
 
 
@@ -25,7 +27,7 @@ class CategoryController extends AbstractController
     public function __construct(EntityManagerInterface $em,
                                 CategoryRepository $categoryRepository,
                                 CategoryService $categoryService,
-                                NormalizerInterface $serializer) {
+                                SerializerInterface $serializer) {
                                     
         $this->categoryRepository = $categoryRepository;
         $this->categoryService = $categoryService;
@@ -44,7 +46,7 @@ class CategoryController extends AbstractController
         $category = $this->categoryRepository->findAllCategory();
         return new JsonResponse([
             'success' => true,
-            'data' => $this->serializer->serialize(
+            'data' => $this->serializer->normalize(
                 $category,
                 'json', ['groups' => ['show-category']]),
         ], Response::HTTP_OK);

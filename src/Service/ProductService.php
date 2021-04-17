@@ -33,17 +33,17 @@ class ProductService
     public function getProductFeatured($featured,$page=1,$tasa=1,$currency='usd')
     {
         $product = $this->productRepository->findProducts($featured, $page,$tasa);
-        $productResult=null;
+        $result=null;
         foreach ($product as $value) {
-            $productResult[]["id"]=$value['id'];
-            $productResult[]["name"]=$value['name'];
-            $productResult[]["featured"]=$value['featured'];
-            $productResult[]["category"]=$value['category'];
-            $productResult[]["currency"]=$value['currency'];
-            $productResult[]["price"]=($value['currency']<>$currency) ? ($value['price'] * $tasa) : $value['price'];
-           
+            $productResult['id']=$value['id'];
+            $productResult['name']=$value['name'];
+            $productResult['featured']=$value['featured'];
+            $productResult['category']=$value['category'];
+            $productResult['currency']=$value['currency'];
+            $productResult['price']=($value['currency']<>$currency) ? ($value['price'] * $tasa) : $value['price'];
+            $result[]=$productResult;
         }
-        return $productResult;
+        return $result;
       
     }
 

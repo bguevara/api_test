@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
 {
@@ -27,7 +28,7 @@ class ProductController extends AbstractController
         ProductRepository $productRepository,
         ProductService $productService,
         CategoryRepository $categoryRepository,
-        NormalizerInterface $serializer) {
+        SerializerInterface $serializer) {
 
         $this->productRepository = $productRepository;
         $this->productService = $productService;
@@ -47,7 +48,7 @@ class ProductController extends AbstractController
         $product = $this->productRepository->findAllProducts($page);
         return new JsonResponse([
             'success' => true,
-            'data' => $this->serializer->serialize(
+            'data' => $this->serializer->normalize(
                 $product,
                 'json', ['groups' => ['show-product']]),
         ], Response::HTTP_OK);
@@ -79,10 +80,10 @@ class ProductController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'data' => $this->serializer->serialize(
+            'data' => $this->serializer->normalize(
                 $product,
                 'json', ['groups' => ['show-product']]),
-        ], Response::HTTP_OK);
+            ], Response::HTTP_OK);
 
 
         
