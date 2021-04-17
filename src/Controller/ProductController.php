@@ -44,8 +44,7 @@ class ProductController extends AbstractController
     {
 
         $page = $request->get('page', 1);
-        $featured = '';
-        $product = $this->productRepository->findAllProducts($featured, $page);
+        $product = $this->productRepository->findAllProducts($page);
         return new JsonResponse([
             'success' => true,
             'data' => $this->serializer->serialize(

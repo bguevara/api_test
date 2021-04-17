@@ -32,7 +32,7 @@ class ProductService
     
     public function getProductFeatured($featured,$page=1,$tasa=1,$currency='usd')
     {
-        $product = $this->productRepository->findAllProducts($featured, $page,$tasa);
+        $product = $this->productRepository->findProducts($featured, $page,$tasa);
         $productResult=null;
         foreach ($product as $value) {
             $productResult[]["id"]=$value['id'];

@@ -25,7 +25,7 @@ class ProductRepository extends ServiceEntityRepository
     }
 
 
-    public function findAllProducts($value='new',$page=1)
+    public function findProducts($value='1',$page=1)
     {
         $firstResult = ($page -1) * self::ITEMS_PER_PAGE;
         $qb = $this->createQueryBuilder('p');
@@ -34,6 +34,29 @@ class ProductRepository extends ServiceEntityRepository
         ->andWhere('p.featured = :status')
         ->leftJoin('p.category', 'c')
         ->setParameter('status', $value)
+        ->orderBy('p.id', 'ASC')
+        ->getQuery()
+        ->getResult();
+
+
+        $criteria = Criteria::create()
+        ->setFirstResult($firstResult)
+        ->setMaxResults(self::ITEMS_PER_PAGE);
+        $qb->addCriteria($criteria);
+
+        //$doctrinePaginator = new DoctrinePaginator($qb);
+        $paginator = new DoctrinePaginator($qb, $fetchJoinCollection = false);
+
+    return $paginator;
+    }
+
+    public function findAllProducts($page=1)
+    {
+        $firstResult = ($page -1) * self::ITEMS_PER_PAGE;
+        $qb = $this->createQueryBuilder('p');
+
+        $qb ->select("p.id,p.name,p.price, p.featured,p.currency,c.name category")
+        ->leftJoin('p.category', 'c')
         ->orderBy('p.id', 'ASC')
         ->getQuery()
         ->getResult();
