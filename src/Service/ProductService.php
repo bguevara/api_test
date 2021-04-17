@@ -2,14 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\Product;
-use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
-use App\Repository\MediaTopicRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-
 
 class ProductService
 {
@@ -18,33 +14,31 @@ class ProductService
     private $categoryRepository;
     private $params;
 
-    public function __construct(EntityManagerInterface  $em,
-                                ProductRepository $productRepository,
-                                CategoryRepository $categoryRepository,
-                                ParameterBagInterface $params)
-    {
+    public function __construct(EntityManagerInterface $em,
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
+        ParameterBagInterface $params) {
         $this->em = $em;
         $this->productRepository = $productRepository;
         $this->categoryRepository = $categoryRepository;
-        $this->params=$params;
+        $this->params = $params;
     }
 
-    
-    public function getProductFeatured($featured,$page=1,$tasa=1,$currency='usd')
+    public function getProductFeatured($featured, $page = 1, $tasa = 1, $currency = 'usd')
     {
-        $product = $this->productRepository->findProducts($featured, $page,$tasa);
-        $result=null;
+        $product = $this->productRepository->findProducts($featured, $page, $tasa);
+        $result = null;
         foreach ($product as $value) {
-            $productResult['id']=$value['id'];
-            $productResult['name']=$value['name'];
-            $productResult['featured']=$value['featured'];
-            $productResult['category']=$value['category'];
-            $productResult['currency']=$value['currency'];
-            $productResult['price']=(strtolower($value['currency'])<>strtolower($currency)) ? ($value['price'] * $tasa) : $value['price'];
-            $result[]=$productResult;
+            $productResult['id'] = $value['id'];
+            $productResult['name'] = $value['name'];
+            $productResult['featured'] = $value['featured'];
+            $productResult['category'] = $value['category'];
+            $productResult['currency'] = $value['currency'];
+            $productResult['price'] = (strtolower($value['currency']) != strtolower($currency)) ? ($value['price'] * $tasa) : $value['price'];
+            $result[] = $productResult;
         }
         return $result;
-      
+
     }
 
     public function persistProduct($product, $requestData)
@@ -55,7 +49,6 @@ class ProductService
             $category = $this->categoryRepository->find($requestData['category']);
         }
 
-        
         $product->setName($requestData['name']);
         $product->setPrice($requestData['price']);
         $product->setCategory($category);
@@ -68,24 +61,22 @@ class ProductService
 
     public function getTasa()
     {
-        $apiKey=$this->params->get('api.key.rate');
-        $urlRateBase=$this->params->get('url.rate');
+        $apiKey = $this->params->get('api.key.rate');
+        $urlRateBase = $this->params->get('url.rate');
 
-        $url=$urlRateBase."latest?access_key=".$apiKey."&symbols=usd&base=EUR";
-	    $json = file_get_contents($url);
-        $tasas = json_decode($json, TRUE);
-        
+        $url = $urlRateBase . "latest?access_key=" . $apiKey . "&symbols=usd&base=EUR";
+        $json = file_get_contents($url);
+        $tasas = json_decode($json, true);
+
         if (in_array("success", $tasas)) {
-            $valorEUR=$tasas['rates']['USD'];
-            $valorUSD=1/$valorEUR;
+            $valorEUR = $tasas['rates']['USD'];
+            $valorUSD = 1 / $valorEUR;
         } else {
             throw new ConflictHttpException('Error get rate api');
         }
-        
-        return ['eur'=>$valorUSD,'usd'=>$valorEUR];
-        
+
+        return ['eur' => $valorUSD, 'usd' => $valorEUR];
+
     }
 
-
-  
 }

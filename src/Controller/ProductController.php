@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
@@ -23,6 +22,7 @@ class ProductController extends AbstractController
     private $productService;
     private $serializer;
     private $em;
+    const CURRENCIES = ['usd', 'eur','USD','EUR'];
 
     public function __construct(EntityManagerInterface $em,
         ProductRepository $productRepository,
@@ -68,10 +68,11 @@ class ProductController extends AbstractController
             $tasa = 1;
         } else {
 
-            if (strtolower($currency) != 'usd' and strtolower($currency) != 'eur') {
+            if (!in_array($currency,self::CURRENCIES)) {
                 throw new ConflictHttpException('parameter currency only accept values EUR or USD');
             }
 
+            
             $arrayTasas = $this->productService->getTasa($currency);
             $tasa = $arrayTasas[$currency];
 
@@ -83,10 +84,8 @@ class ProductController extends AbstractController
             'data' => $this->serializer->normalize(
                 $product,
                 'json', ['groups' => ['show-product']]),
-            ], Response::HTTP_OK);
+        ], Response::HTTP_OK);
 
-
-        
     }
 
     /**
@@ -97,7 +96,12 @@ class ProductController extends AbstractController
 
         try {
             $requestData = json_decode($request->getContent(), true);
-            $page = $request->get('page', 1);
+            $currency = $requestData['currency'];
+
+            if (!in_array($currency,self::CURRENCIES)) {
+                throw new ConflictHttpException('parameter currency only accept values EUR or USD');
+            }
+
             $product = new Product;
             $product = $this->productService->persistProduct($product, $requestData);
 
@@ -117,6 +121,11 @@ class ProductController extends AbstractController
 
             if ($requestData['id'] == null or $requestData['id'] == '') {
                 throw new ConflictHttpException('error, Id is empty');
+            }
+
+            $currency = $requestData['currency'];
+            if (!in_array($currency,self::CURRENCIES)) {
+                throw new ConflictHttpException('parameter currency only accept values usd or eur');
             }
 
             $page = $request->get('page', 1);

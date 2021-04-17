@@ -5,12 +5,15 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
  */
 class Product
 {
+    const CURRENCIES = ['usd', 'eur','USD','EUR'];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -38,7 +41,9 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=10)
+     * @Assert\Choice(choices=Product::CURRENCIES, message="Choose a valid currency usd|eur.")
      * @Groups({"show_product", "list_product"}) 
+     * 
      */
     private $currency;
 
