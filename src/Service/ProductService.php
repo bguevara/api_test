@@ -40,7 +40,7 @@ class ProductService
             $productResult['featured']=$value['featured'];
             $productResult['category']=$value['category'];
             $productResult['currency']=$value['currency'];
-            $productResult['price']=($value['currency']<>$currency) ? ($value['price'] * $tasa) : $value['price'];
+            $productResult['price']=(strtolower($value['currency'])<>strtolower($currency)) ? ($value['price'] * $tasa) : $value['price'];
             $result[]=$productResult;
         }
         return $result;
