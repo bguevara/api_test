@@ -74,7 +74,7 @@ class ProductController extends AbstractController
 
             
             $arrayTasas = $this->productService->getTasa($currency);
-            $tasa = $arrayTasas[$currency];
+            $tasa = $arrayTasas[strtolower($currency)];
 
         }
         $product = $this->productService->getProductFeatured($featured, $page, $tasa, $currency);
