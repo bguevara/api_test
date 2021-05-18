@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\Criteria;
  */
 class CategoryRepository extends ServiceEntityRepository
 {
-    CONST ITEMS_PER_PAGE=10;
+    CONST ITEMS_PER_PAGE=4;
 
     public function __construct(ManagerRegistry $registry)
     {
